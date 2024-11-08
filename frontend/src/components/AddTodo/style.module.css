@@ -1,0 +1,13 @@
+/* ADD TODO 領域 */
+
+.inputArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-right: 20px;
+}
+
+.inputButton {
+  margin-left: -60px;
+}

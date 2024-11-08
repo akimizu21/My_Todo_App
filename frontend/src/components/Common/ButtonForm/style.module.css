@@ -1,0 +1,15 @@
+.buttonForm {
+  display: flex;
+  justify-content: center;
+  width: 64px;
+  height: 36px;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background: #ddd;
+}
+
+.buttonForm:hover {
+  opacity: 0.8;
+}

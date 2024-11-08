@@ -1,0 +1,26 @@
+/* SELECT TODO 領域 */
+.todoSelect {
+  width: 200px;
+  margin: 32px auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.Tab {
+  border-bottom: 1px solid #000;
+  cursor: pointer;
+}
+
+.Tab:hover {
+  color: red;
+  border-bottom: 2px solid red;
+}
+
+.active {
+  color: red;
+  font-weight: bold;
+  border-bottom: 2px solid red;
+}

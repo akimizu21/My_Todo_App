@@ -1,0 +1,28 @@
+/* TODO LIST 表示領域 */
+.todoList {
+  width: 40%;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.todoContents {
+  margin: 16px 0 24px 0;
+  background: orange;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #000;
+  border-radius: 4px;
+  padding: 16px;
+  align-items: center;
+}
+
+.farContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.far {
+  cursor: pointer;
+}
