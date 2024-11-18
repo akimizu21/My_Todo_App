@@ -5,11 +5,11 @@ FROM node:18 AS build
 WORKDIR /app
 
 # package.jsonとpackage-lock.jsonをコピーして依存関係をインストール
-COPY frontend/package*.json ./
+COPY ./package*.json ./
 RUN npm install
 
 # アプリケーションのソースコードをコピーしてビルド
-COPY frontend/. .
+COPY . .
 RUN npm run build
 
 # サーバー用イメージとしてNginxを使用してビルド成果物をコピー
@@ -22,7 +22,7 @@ COPY --from=build /app/build /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Nginx設定を追加
-COPY ../nginx.conf /etc/nginx/conf.d
+COPY ./nginx.conf /etc/nginx/conf.d
 
 # Nginxを公開するポートを指定
 EXPOSE 80

@@ -1,8 +1,8 @@
 # モデルの定義
 from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel
-from db import Base
-from db import ENGINE
+from app.db import Base
+from app.db import ENGINE
 
 # todoテーブルのモデルTodoTableを定義
 class TodoTable(Base):

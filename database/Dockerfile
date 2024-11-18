@@ -2,7 +2,7 @@
 FROM mysql:8.0
 
 # MySQLのローカルの設定ファイルをコンテナにコピー
-COPY Docker/db_context/my.cnf /etc/mysql/conf.d/my.cnf
+COPY ./my.cnf /etc/mysql/conf.d/my.cnf
 # init.sqlをコンテナの/docker-entrypoint-init.db.dと共有
-COPY Docker/db_context/init.sql docker-entrypoint-initdb.d
+COPY ./init.sql docker-entrypoint-initdb.d
 

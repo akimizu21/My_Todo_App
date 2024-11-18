@@ -8,11 +8,14 @@ services:
     # frontendのDockerfileをビルドする
     build: 
       # ビルドコンテキストはカレントディレクトリ
-      context: ./
-      dockerfile: Docker/front_context/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     # ローカルの3000番ポートとコンテナの3000番ポートをつなぐ
     ports:
       - "3000:3000"
+    # frontendのコードをマウント
+    # volumes:
+    #   - .:/usr/share/nginx/html
     # コンテナ内の環境変数を設定
     environment:
       - NODE_ENV=production
@@ -25,19 +28,22 @@ services:
     container_name: backend
      # backendのDockerfileをビルドする
     build: 
-      context: ./
-      dockerfile: Docker/back_context/Dockerfile
-    # ローカルの3002番ポートとコンテナの3002番ポートをつなぐ
+      context: ./backend
+      dockerfile: Dockerfile
+    # ローカルの3001番ポートとコンテナの3001番ポートをつなぐ
     ports:
       - 3001:3001
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3001"]
+    # バックエンドコードをマウント
+    # volumes:
+    #   - .:/usr/src/serve
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3001", "--reload"]
     tty: true
 
   db:
     container_name: MySQL
     build: 
-      context: ./
-      dockerfile: Docker/db_context/Dockerfile
+      context: ./database
+      dockerfile: Dockerfile
     # DBのボリュームを指定
     # ローカルの/data/dbをコンテナの/var/lib/mysqlにマウントする
     volumes:
