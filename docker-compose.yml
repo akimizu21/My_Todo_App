@@ -2,48 +2,48 @@ version: '3.8'
 
 # frontend(node),db(MySQL),backend(FastAPI)のコンテナを作成
 services:
+  backend:
+    # コンテナ名をbackendに設定
+    container_name: backend
+    # バックエンドコードをマウント
+    volumes:
+      - ./backend:/app
+    build:
+       # ビルドコンテキストはカレントディレクトリ
+      context: .
+      dockerfile: docker/python/Dockerfile
+    ports:
+      - 8080:8080
+  
   frontend:
     # コンテナ名をfrontendに設定
     container_name: frontend
-    # frontendのDockerfileをビルドする
-    build: 
+    build:
       # ビルドコンテキストはカレントディレクトリ
-      context: ./frontend
-      dockerfile: Dockerfile
-    # ローカルの3000番ポートとコンテナの3000番ポートをつなぐ
+      context: .
+      dockerfile: docker/nodejs/Dockerfile
+    volumes:
+      - ./frontend:/src # ローカルをコンテナにマウント
+      - /src/node_modules # node_modulesを共有せずコンテナ内で管理
+    command: sh -c "cd src && npm start" #コンテナを立ち上げたときに自動的にbuildする
     ports:
       - "3000:3000"
-    # frontendのコードをマウント
-    # volumes:
-    #   - .:/usr/share/nginx/html
-    # コンテナ内の環境変数を設定
     environment:
-      - NODE_ENV=production
-    restart: always
+      - CHOKIDAR_USEPOLLING=true # ファイル監視を有効化
   
-  backend:
-    depends_on:
-      - db
-    # コンテナ名をbacktendに設定
-    container_name: backend
-     # backendのDockerfileをビルドする
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
-    # ローカルの3001番ポートとコンテナの3001番ポートをつなぐ
+  nginx:
+    image: nginx:latest
     ports:
-      - 3001:3001
-    # バックエンドコードをマウント
-    # volumes:
-    #   - .:/usr/src/serve
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3001", "--reload"]
-    tty: true
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
 
   db:
     container_name: MySQL
     build: 
-      context: ./database
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/database/Dockerfile
     # DBのボリュームを指定
     # ローカルの/data/dbをコンテナの/var/lib/mysqlにマウントする
     volumes:

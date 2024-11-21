@@ -2,17 +2,17 @@
 FROM python:3.7
 
 # アプリケーションディレクトリを作成して移動
-WORKDIR /usr/src/server
+WORKDIR /app
 
 # requirements.txtをコピー
-COPY ./requirements.txt /usr/src/server/requirements.txt
+COPY docker/python/requirements.txt .
 
 # requirements.txtをインストール
-RUN pip install -r /usr/src/server/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # アプリケーションのソースコードをコピー
-COPY ./app /usr/src/server/app
+COPY ./backend/ .
 
 # Uvicornでアプリケーションを起動
-CMD [ "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "3001"]
+CMD [ "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
 

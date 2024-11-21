@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from typing import List # ネストされたBodyを定義するために必要
 from starlette.middleware.cors import CORSMiddleware # CORSを回避するために必要
-from app.db import session # DBと接続するためのセッション
-from app.model import TodoTable, Todo # 今回使うモデルをインポート
+from db import session # DBと接続するためのセッション
+from model import TodoTable, Todo # 今回使うモデルをインポート
 
 app = FastAPI()
 
@@ -25,5 +25,10 @@ async def get_todos():
 @app.get("/")
 async def root():
     return {'message': 'Hello World'}
+
+@app.get("/hello")
+async def root():
+    return {'message': 'Hello Hello'}
+
 
 
