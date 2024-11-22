@@ -7,6 +7,7 @@ import React from 'react';
  * components
  */
 import { Todo, INIT_TODO_LIST, INIT_TODO_ID } from '../constants/data';
+import { error } from 'console';
 
 interface State {
   addInputTodo: string;
@@ -22,6 +23,7 @@ interface Actions {
   handleCheckTodo: (id: number, title: string) => void;
   handleDeleteTodo: (id: number, title: string) => void;
   handelSearchTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handlePostTodo: () => void;
 }
 
 /**
@@ -45,14 +47,16 @@ export const useApp = (): [State, Actions]=> {
   /**
    * TodoList取得処理
    */
-  // const getData = async () => {
-  //   try {
-  //     const response = await axios.get("/api/todo")
-  //     setTodoList(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching todo data:", error);
-  //   }
-  // };
+  const getData = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/todos');
+      const data = await response.json();
+      setTodoList(data);
+      updateShowTodoList(data,searchKeyword);
+    } catch (error) {
+      console.error('Request Not Found', error);
+    }
+  }
 
   /**
    * addInputTodo更新処理
@@ -61,6 +65,33 @@ export const useApp = (): [State, Actions]=> {
   const onChangeAddInputTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddInputTodo(e.target.value);
   };
+
+  /**
+   * 未完了
+   */
+  const handlePostTodo = () => { 
+    const newTodo = {
+      title: addInputTodo,
+      isDone: false,
+    };
+
+    fetch('http://localhost:8080/todos', {
+      method: "POST",
+      headers: {
+        // サーバーへ送るファイルはJSONファイルであることを宣言
+        'Content-Type': 'application/json',
+      },
+      // 送るデータをjson形式に変換
+      body: JSON.stringify(newTodo)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Succsess", data);
+    })
+    .catch((error) => {
+      console.log("Error", error)
+    });
+  }
 
   /**
    * Todo追加処理
@@ -164,9 +195,9 @@ export const useApp = (): [State, Actions]=> {
     }
   };
 
-  // React.useEffect(() => {
-  //   getData();
-  // }, []);
+  React.useEffect(() => {
+    getData();
+  }, []);
 
   return [
     {
@@ -182,6 +213,7 @@ export const useApp = (): [State, Actions]=> {
       handleCheckTodo,
       handleDeleteTodo,
       handelSearchTodo,
+      handlePostTodo
     },
   ];
 };
