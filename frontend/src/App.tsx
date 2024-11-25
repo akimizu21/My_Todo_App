@@ -27,7 +27,6 @@ export const App = () => {
 
   return (
     <>
-      <button onClick={actions.handlePostTodo}>送信</button>
       <h1 className={styles.title}>TODO LIST</h1>
 
       {/* ADD TODO 領域 */}
@@ -36,6 +35,7 @@ export const App = () => {
           addInputTodo={state.addInputTodo}
           onChangeAddInputTodo={actions.onChangeAddInputTodo}
           handleAddTodo={actions.handleAddTodo}
+          handlePostTodo={actions.handlePostTodo}
         />
       </section>
 

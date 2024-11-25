@@ -49,7 +49,9 @@ export const useApp = (): [State, Actions]=> {
    */
   const getData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/todos');
+      const response = await fetch('http://localhost:8080/todos', {
+        method: "GET"
+      });
       const data = await response.json();
       setTodoList(data);
       updateShowTodoList(data,searchKeyword);
@@ -59,22 +61,14 @@ export const useApp = (): [State, Actions]=> {
   }
 
   /**
-   * addInputTodo更新処理
-   * @param e
-   */
-  const onChangeAddInputTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddInputTodo(e.target.value);
-  };
-
-  /**
-   * 未完了
-   */
-  const handlePostTodo = () => { 
-    const newTodo = {
-      title: addInputTodo,
-      isDone: false,
+   * Todoをサーバーへ送る処理
+  */
+ const handlePostTodo = () => { 
+   const newTodo = {
+     title: addInputTodo,
+     isDone: false,
     };
-
+    
     fetch('http://localhost:8080/todos', {
       method: "POST",
       headers: {
@@ -92,6 +86,14 @@ export const useApp = (): [State, Actions]=> {
       console.log("Error", error)
     });
   }
+  
+  /**
+   * addInputTodo更新処理
+   * @param e
+   */
+  const onChangeAddInputTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddInputTodo(e.target.value);
+  };
 
   /**
    * Todo追加処理

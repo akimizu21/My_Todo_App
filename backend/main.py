@@ -22,13 +22,11 @@ async def get_todos():
   todo = session.query(TodoTable).all()
   return [{"id": todo_list.id, "title": todo_list.title, "isDone": bool(todo_list.isDone)} for todo_list in todo]
 
-## 未完了 ##
 # todoListの登録
 @app.post("/todos", response_model=TodoResponse)
 async def create_todos(todo: TodoCreate):
   # データベース用のモデルを作成
   new_todo = TodoTable(title=todo.title, isDone=todo.isDone)
-
   # データを追加してコミット
   session.add(new_todo)
   session.commit()
