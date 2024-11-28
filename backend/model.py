@@ -11,7 +11,7 @@ class TodoTable(Base):
   title = Column(String, nullable=False)
   isDone = Column(Integer, nullable=False)
 
-# POSTやPUTのとき受け取るリクエスト用のモデルを定義
+# POSTのとき受け取るリクエスト用のモデルを定義
 class TodoCreate(BaseModel):
   title: str
   isDone: int
@@ -19,6 +19,11 @@ class TodoCreate(BaseModel):
 # GETのとき受け取るレスポンス用のモデルを定義
 class TodoResponse(BaseModel):
   id: int
+  title: str
+  isDone: int
+
+# PUTのとき受け取るリクエスト用のモデルを定義
+class TodoUpdate(BaseModel):
   title: str
   isDone: int
 

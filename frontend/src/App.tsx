@@ -63,6 +63,7 @@ export const App = () => {
           todoList={state.showTodoList}
           handleCheckTodo={actions.handleCheckTodo}
           handleDeleteTodo={actions.handleDeleteTodo}
+          handleDeleteTodoRequest={actions.handleDeleteTodoRequest}
         />
       </section>
     </>

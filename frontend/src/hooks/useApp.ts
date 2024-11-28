@@ -8,6 +8,7 @@ import React from 'react';
  */
 import { Todo, INIT_TODO_LIST, INIT_TODO_ID } from '../constants/data';
 import { error } from 'console';
+import { json } from 'stream/consumers';
 
 interface State {
   addInputTodo: string;
@@ -24,6 +25,7 @@ interface Actions {
   handleDeleteTodo: (id: number, title: string) => void;
   handelSearchTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handlePostTodo: () => void;
+  handleDeleteTodoRequest: (id: number) => void;
 }
 
 /**
@@ -69,7 +71,7 @@ export const useApp = (): [State, Actions]=> {
      isDone: false,
     };
     
-    fetch('http://localhost:8080/todos', {
+    fetch('http://localhost:8080/todo', {
       method: "POST",
       headers: {
         // サーバーへ送るファイルはJSONファイルであることを宣言
@@ -86,6 +88,47 @@ export const useApp = (): [State, Actions]=> {
       console.log("Error", error)
     });
   }
+
+  /**
+   * Todo削除処理(DB)
+   * @param targetId 
+   */
+  const handleDeleteTodoRequest = async (targetId: number) => {
+    fetch(`http://localhost:8080/todo/${targetId}`, {
+      method: "DELETE",
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Succsess", data);
+    })
+    .catch((error) => {
+      console.log("Error", error)
+    })
+  }
+
+  // 未完了 //
+  /**
+   * todoのisDoneを更新する処理
+   */
+  const onChangeIsDone = async (todoId: number, newIsDone: boolean) => {
+    try {
+      const response = await fetch('http://localhost:8080/todos', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: todoId,
+          isDone: newIsDone,
+        })
+      });
+
+      const data = await response.json();
+      console.log(data.message);
+    } catch (error) {
+      console.error("Error updating isDone:", error);
+    }
+  };
   
   /**
    * addInputTodo更新処理
@@ -215,7 +258,8 @@ export const useApp = (): [State, Actions]=> {
       handleCheckTodo,
       handleDeleteTodo,
       handelSearchTodo,
-      handlePostTodo
+      handlePostTodo,
+      handleDeleteTodoRequest,
     },
   ];
 };

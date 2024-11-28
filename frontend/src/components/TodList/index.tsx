@@ -21,10 +21,11 @@ interface Props {
   todoList: Todo[];
   handleCheckTodo: (id: number, title: string) => void;
   handleDeleteTodo: (id: number, title: string) => void;
+  handleDeleteTodoRequest: (id: number) => void;
 }
 
 export const TodoList = (props: Props) => {
-  const { selectTab, todoList, handleCheckTodo, handleDeleteTodo } = props;
+  const { selectTab, todoList, handleCheckTodo, handleDeleteTodo, handleDeleteTodoRequest } = props;
   return (
     <>
       {selectTab === '未完了' && (
@@ -43,7 +44,10 @@ export const TodoList = (props: Props) => {
                     />
                     <FontAwesomeIcon
                       icon={faCircleXmark}
-                      onClick={() => handleDeleteTodo(todo.id, todo.title)}
+                      onClick={() => {
+                        handleDeleteTodo(todo.id, todo.title);
+                        handleDeleteTodoRequest(todo.id);
+                      }}
                       className={styles.far}
                     />
                   </div>
