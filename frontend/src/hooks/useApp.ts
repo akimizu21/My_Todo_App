@@ -7,8 +7,6 @@ import React from 'react';
  * components
  */
 import { Todo, INIT_TODO_LIST, INIT_TODO_ID } from '../constants/data';
-import { error } from 'console';
-import { json } from 'stream/consumers';
 
 interface State {
   addInputTodo: string;
@@ -24,8 +22,8 @@ interface Actions {
   handleCheckTodo: (id: number, title: string) => void;
   handleDeleteTodo: (id: number, title: string) => void;
   handelSearchTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handlePostTodo: () => void;
   handleDeleteTodoRequest: (id: number) => void;
+  onChangeIsDone: (id: number, isDone: boolean) => void;
 }
 
 /**
@@ -65,28 +63,35 @@ export const useApp = (): [State, Actions]=> {
   /**
    * Todoをサーバーへ送る処理
   */
- const handlePostTodo = () => { 
+ const handlePostTodo = async () => { 
    const newTodo = {
      title: addInputTodo,
      isDone: false,
     };
     
-    fetch('http://localhost:8080/todo', {
-      method: "POST",
-      headers: {
-        // サーバーへ送るファイルはJSONファイルであることを宣言
-        'Content-Type': 'application/json',
-      },
-      // 送るデータをjson形式に変換
-      body: JSON.stringify(newTodo)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Succsess", data);
-    })
-    .catch((error) => {
-      console.log("Error", error)
-    });
+    try {
+      const response = await fetch('http://localhost:8080/todo', {
+        method: "POST",
+        headers: {
+          // サーバーへ送るファイルはJSONファイルであることを宣言
+          'Content-Type': 'application/json',
+        },
+        // 送るデータをjson形式に変換
+        body: JSON.stringify(newTodo)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add Todo');
+      }
+
+      const addedTodo = await response.json();
+      console.log("Successfully added Todo:", addedTodo);
+
+      return addedTodo;
+    } catch (error) {
+      console.error('Error adding Todo:', error);
+      throw error;
+    }
   }
 
   /**
@@ -106,29 +111,28 @@ export const useApp = (): [State, Actions]=> {
     })
   }
 
-  // 未完了 //
   /**
    * todoのisDoneを更新する処理
    */
-  const onChangeIsDone = async (todoId: number, newIsDone: boolean) => {
-    try {
-      const response = await fetch('http://localhost:8080/todos', {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          id: todoId,
-          isDone: newIsDone,
-        })
-      });
-
-      const data = await response.json();
-      console.log(data.message);
-    } catch (error) {
-      console.error("Error updating isDone:", error);
-    }
-  };
+  const onChangeIsDone = async (targetId: number, newIsDone: boolean) => {
+    fetch (`http://localhost:8080/update-todo/${targetId}`, {
+     method: "POST",
+     headers: {
+      "Content-Type": "application/json"
+     },
+     body: JSON.stringify({
+      id: targetId,
+      isDone: newIsDone,
+     })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Succsess", data);
+    })
+    .catch((error) => {
+      console.log("Error", error)
+    });
+  }
   
   /**
    * addInputTodo更新処理
@@ -141,31 +145,23 @@ export const useApp = (): [State, Actions]=> {
   /**
    * Todo追加処理
    */
-  const handleAddTodo = () => {
-    // addInputTodoが空じゃないとき
+  const handleAddTodo = async () => {
     if (addInputTodo !== '') {
-      const nextUniquId = uniquId + 1;
+      try {
+        // サーバーにTodoを追加
+        await handlePostTodo();
 
-      const newTodoList = [
-        ...todoList,
-        {
-          id: nextUniquId,
-          title: addInputTodo,
-          isDone: false,
-        },
-      ];
+        // サーバーから最新データを取得
+        await getData();
 
-      // オリジナルのTodoListを更新
-      setTodoList(newTodoList);
-
-      // 検索用TodoListを更新
-      updateShowTodoList(newTodoList, searchKeyword);
-      // IDをインクリメント
-      setUniquId(nextUniquId);
-      // addINputTodoをリセット
-      setAddInputTodo('');
+        // addINputTodoをリセット
+        setAddInputTodo('');
+      } catch (error) {
+        console.error('Error in handleAddTodo:', error);
+        alert("データの追加に失敗しました")
+      }
     }
-  };
+  }
 
   /**
    * Todo削除処理
@@ -181,6 +177,9 @@ export const useApp = (): [State, Actions]=> {
 
       // 表示用TodoListを更新
       updateShowTodoList(newTodoList, searchKeyword);
+
+      // サーバーへ削除を送信
+      handleDeleteTodoRequest(targetId);
     }
   };
 
@@ -201,6 +200,9 @@ export const useApp = (): [State, Actions]=> {
 
       // 表示用TodoListを更新
       updateShowTodoList(doneTodoList, searchKeyword);
+
+      // サーバーへ更新を通信
+      onChangeIsDone(targetId, true);
     }
   };
 
@@ -258,8 +260,8 @@ export const useApp = (): [State, Actions]=> {
       handleCheckTodo,
       handleDeleteTodo,
       handelSearchTodo,
-      handlePostTodo,
       handleDeleteTodoRequest,
+      onChangeIsDone,
     },
   ];
 };

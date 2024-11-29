@@ -35,7 +35,6 @@ export const App = () => {
           addInputTodo={state.addInputTodo}
           onChangeAddInputTodo={actions.onChangeAddInputTodo}
           handleAddTodo={actions.handleAddTodo}
-          handlePostTodo={actions.handlePostTodo}
         />
       </section>
 
@@ -63,7 +62,6 @@ export const App = () => {
           todoList={state.showTodoList}
           handleCheckTodo={actions.handleCheckTodo}
           handleDeleteTodo={actions.handleDeleteTodo}
-          handleDeleteTodoRequest={actions.handleDeleteTodoRequest}
         />
       </section>
     </>

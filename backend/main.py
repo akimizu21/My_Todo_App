@@ -30,7 +30,13 @@ async def create_todo(todo: TodoCreate):
   # データを追加してコミット
   session.add(new_todo)
   session.commit()
-  return {"message": "Todo added successfully"}
+  session.refresh(new_todo)
+  # 保存したデータをレスポンスとして返す
+  return {
+    "id": new_todo.id,
+    "title": new_todo.title,
+    "isDone": new_todo.isDone,
+  }
 
 # todoListの削除
 @app.delete("/todo/{todo_id}")
@@ -44,22 +50,18 @@ async def delete_todo(todo_id: int):
   session.commit()
   return {"message": "Todo deleted successfully"}
 
-# 未完了 #
 # isDoneの変更
-@app.put("/todo/{todo_id}")
-async def change_isDone(todo_update: TodoUpdate):
-  todo = session.query(TodoTable).filter(TodoTable.id == todo_update.id).first()
+@app.post("/update-todo/{todo_id}")
+async def change_isDone(todo_id: int, todo_update: TodoUpdate):
+  # Todoの検索
+  todo = session.query(TodoTable).filter(TodoTable.id == todo_id).first()
   # todoがない場合の処理
   if not todo:
      raise HTTPException(status_code=404, detail="Todo not found")
   # todoがあれば更新する
-  todo.isDone = todo_update.isDone
+  todo.isDone = bool(todo_update.isDone)
   session.commit()
   return {"message": f"Todo with id {todo_update.id} isDone changed to {todo_update.isDone}"}
-
-@app.get("/")
-async def root():
-    return {'message': 'Hello World'}
 
 
 

@@ -24,7 +24,7 @@ class TodoResponse(BaseModel):
 
 # PUTのとき受け取るリクエスト用のモデルを定義
 class TodoUpdate(BaseModel):
-  title: str
+  id: int
   isDone: int
 
 def main():

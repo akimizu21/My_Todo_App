@@ -16,11 +16,10 @@ interface Props {
   addInputTodo: string;
   onChangeAddInputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleAddTodo: () => void;
-  handlePostTodo: () => void;
 }
 
 export const AddTodo = (props: Props) => {
-  const { addInputTodo, onChangeAddInputTodo, handleAddTodo, handlePostTodo } = props;
+  const { addInputTodo, onChangeAddInputTodo, handleAddTodo} = props;
   return (
     <>
       <h2>ADD TODO</h2>
@@ -30,10 +29,7 @@ export const AddTodo = (props: Props) => {
           inputValue={addInputTodo}
           handleChangeValue={onChangeAddInputTodo}
         />
-        <ButtonForm onClick={()=> {
-          handleAddTodo();
-          handlePostTodo();
-        }}>
+        <ButtonForm onClick={handleAddTodo}>
           追加
         </ButtonForm>
       </div>
